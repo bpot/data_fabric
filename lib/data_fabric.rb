@@ -41,8 +41,7 @@ require 'data_fabric/version'
 module DataFabric
 
   def self.logger
-    devnull = RUBY_PLATFORM =~ /w32/ ? 'nul' : '/dev/null'
-    @logger ||= ActiveRecord::Base.logger || Logger.new(devnull)
+    @logger ||= ActiveRecord::Base.logger || default_logger 
   end
   
   def self.logger=(log)
@@ -92,6 +91,14 @@ module DataFabric
 
   def self.ensure_setup
     Thread.current[:shards] = {} unless Thread.current[:shards]
+  end
+
+  private
+  def self.default_logger
+    devnull = RUBY_PLATFORM =~ /w32/ ? 'nul' : '/dev/null'
+    l = Logger.new(devnull)
+    l.level = Logger::INFO
+    l
   end
 
 end
